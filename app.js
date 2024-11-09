@@ -1,5 +1,5 @@
-// Mock database and session data
-let session = localStorage.getItem("session") || null;
+// Initial setup for portfolio, trade history, and prices
+let session = JSON.parse(localStorage.getItem("session")) || null;
 let portfolio = JSON.parse(localStorage.getItem("portfolio")) || { Solar: 0, Wind: 0, Hydro: 0 };
 let tradeHistory = JSON.parse(localStorage.getItem("tradeHistory")) || [];
 let prices = { Solar: 50, Wind: 40, Hydro: 30 };
@@ -12,7 +12,7 @@ function login() {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
 
-    if (username && password) {  // Mock check
+    if (username && password) {  // Mock check, no backend needed
         session = { username };
         localStorage.setItem("session", JSON.stringify(session));
         loadApp();
@@ -31,6 +31,11 @@ function logout() {
     session = null;
     localStorage.removeItem("session");
     location.reload();
+}
+
+function showLogin() {
+    document.getElementById("login-section").style.display = "block";
+    document.getElementById("nav").style.display = "none";
 }
 
 function showDashboard() {
@@ -75,16 +80,21 @@ function showMarketNews() {
     document.getElementById('content').innerHTML = `
         <h2>Market News</h2>
         <p>Latest energy market updates will appear here.</p>
+        <section id="market-data">
+            <h2>Market Data</h2>
+            <p id="energy-price">Loading...</p>
+        </section>
     `;
 }
 
 function trade(action, commodity) {
-    const price = prices[commodity];
+    const price = parseFloat(prices[commodity]);
     const quantity = action === 'buy' ? 1 : -1;
 
     portfolio[commodity] += quantity;
     tradeHistory.push(`${action.toUpperCase()} ${commodity} at $${price}/MWh`);
 
+    // Update local storage with new portfolio and trade history
     localStorage.setItem("portfolio", JSON.stringify(portfolio));
     localStorage.setItem("tradeHistory", JSON.stringify(tradeHistory));
 
@@ -92,9 +102,31 @@ function trade(action, commodity) {
     showPortfolio();
 }
 
-// Simulate dynamic price changes
+// Function to simulate price changes
 function updatePrices() {
     for (let key in prices) {
-        prices[key] = (prices[key] * (1 + (Math.random() - 0.5) / 10)).toFixed(2);
+        prices[key] = (parseFloat(prices[key]) * (1 + (Math.random() - 0.5) / 10)).toFixed(2);
     }
 }
+
+// This is a limit of 25 requests per day that are free
+const ALPHA_VANTAGE_API_KEY = 'GYPITQ0B3M8UKCG2';
+
+async function fetchEnergyData() {
+    const response = await fetch(`https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=CL=F&apikey=GYPITQ0B3M8UKCG2`);
+    const data = await response.json();
+
+    if (data['Time Series (Daily)']) {
+        const latestDate = Object.keys(data['Time Series (Daily)'])[0];
+        const latestPrice = data['Time Series (Daily)'][latestDate]['4. close'];
+        document.getElementById('energy-price').innerText = `Crude Oil Price: $${parseFloat(latestPrice).toFixed(2)}`;
+    } else {
+        console.error("Failed to fetch energy data", data);
+        document.getElementById('energy-price').innerText = 'Energy Data Unavailable';
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    fetchEnergyData();  // Call this function on load
+});
+
