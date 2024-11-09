@@ -9,14 +9,20 @@
 <body>
     <header>
         <h1>Energy Trading Platform</h1>
-        <nav>
+        <nav id="nav">
             <button onclick="showDashboard()">Dashboard</button>
             <button onclick="showPortfolio()">Portfolio</button>
             <button onclick="showMarketNews()">Market News</button>
+            <button onclick="logout()">Logout</button>
         </nav>
     </header>
     <main id="content">
-        <!-- Sections dynamically loaded by app.js -->
+        <section id="login-section">
+            <h2>Login</h2>
+            <input id="username" type="text" placeholder="Username" />
+            <input id="password" type="password" placeholder="Password" />
+            <button onclick="login()">Login</button>
+        </section>
     </main>
     <script src="app.js"></script>
 </body>

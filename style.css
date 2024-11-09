@@ -18,3 +18,11 @@ nav button {
 #content {
     padding: 1rem;
 }
+
+#login-section {
+    display: none;
+}
+
+#nav {
+    display: none;
+}
