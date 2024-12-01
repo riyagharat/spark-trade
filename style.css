@@ -18,11 +18,17 @@ nav button {
 #content {
     padding: 1rem;
 }
-
 #login-section {
     display: none;
 }
-
 #nav {
     display: none;
+}
+.price-up {
+    color: green;
+    font-weight: bold;
+}
+.price-down {
+    color: red;
+    font-weight: bold;
 }
