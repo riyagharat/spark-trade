@@ -129,7 +129,7 @@ function loadFPLView() {
 }
 
 function simulateAdminTask() {
-    alert("Admin task performed successfully!");
+    alert("FPL task performed successfully!");
 }
 
 function loadUserData(username) {
